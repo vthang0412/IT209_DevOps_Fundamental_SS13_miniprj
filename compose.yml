@@ -1,0 +1,42 @@
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: campus_hub
+      MYSQL_ROOT_PASSWORD: "Thang@bn1"
+      MYSQL_USER: campus_user
+      MYSQL_PASSWORD: "Thang@bn1"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'mysqladmin ping -h 127.0.0.1 -uroot -p"$${MYSQL_ROOT_PASSWORD}" --silent'
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: campus-hub-backend:latest
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/campus_hub
+      DB_USERNAME: campus_user
+      DB_PASSWORD: "Thang@bn1"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

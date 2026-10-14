@@ -1,0 +1,12 @@
+.git
+../.gitignore
+.gradle
+build
+out
+.idea
+.vscode
+*.iml
+.env
+.env.*
+!.env.example
+.DS_Store
